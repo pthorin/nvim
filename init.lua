@@ -45,6 +45,20 @@ vim.opt.breakindent = true
 -- Save undo history
 vim.opt.undofile = true
 
+-- Turn off swap file
+vim.opt.swapfile = false
+vim.opt.backup = false
+
+vim.opt.autoread = true
+vim.opt.showmatch = true
+vim.opt.background = 'dark'
+
+vim.opt.ruler = true
+
+vim.opt.encoding = 'utf-8'
+vim.opt.fileencodings = { 'ucs-bom', 'utf-8', 'default', 'cp437', 'latin1' }
+vim.opt.fileformats = { 'unix', 'dos', 'mac' }
+
 -- Case-insensitive searching UNLESS \C or one or more capital letters in the search term
 vim.opt.ignorecase = true
 vim.opt.smartcase = true
@@ -84,6 +98,13 @@ vim.opt.scrolloff = 10
 -- Set highlight on search, but clear on pressing <Esc> in normal mode
 vim.opt.hlsearch = true
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
+
+-- copy / paste
+vim.keymap.set('n', '<leader>y', '"+y', { desc = '[Y]ank to clipboard' })
+vim.keymap.set('v', '<leader>y', '"+y', { desc = '[Y]ank to clipboard' })
+vim.keymap.set('n', '<leader>p', '"+p', { desc = '[P]aste from clipboard' })
+vim.keymap.set('n', '<leader>P', '"+P', { desc = '[P]aste from clipboard' })
+vim.keymap.set('n', 'Y', 'y$', { desc = 'Yank to end of line' })
 
 -- Diagnostic keymaps
 vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = 'Go to previous [D]iagnostic message' })
@@ -154,6 +175,8 @@ require('lazy').setup({
   'tpope/vim-surround', -- All about surroundings
   'tpope/vim-fugitive', -- Git
   'github/copilot.vim',
+  -- 'raimondi/delimitmate', -- Auto close brackets
+  'godlygeek/tabular', -- Align text
 
   -- NOTE: Plugins can also be added by using a table,
   -- with the first argument being the link and the following
@@ -764,6 +787,9 @@ require('lazy').setup({
       -- - sd'   - [S]urround [D]elete [']quotes
       -- - sr)'  - [S]urround [R]eplace [)] [']
       -- require("mini.surround").setup()
+
+      -- Autopairs
+      require('mini.pairs').setup()
 
       -- Simple and easy statusline.
       --  You could remove this setup call if you don't like it,
