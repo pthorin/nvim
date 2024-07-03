@@ -99,6 +99,8 @@ vim.opt.scrolloff = 10
 vim.opt.hlsearch = true
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 
+vim.keymap.set('n', '<leader>sc', '<cmd>/^(<<<<<<<|>>>>>>>|=======)<CR>', { desc = '[S]earch for merge [c]onflict markers' })
+
 -- copy / paste
 vim.keymap.set('n', '<leader>y', '"+y', { desc = '[Y]ank to clipboard' })
 vim.keymap.set('v', '<leader>y', '"+y', { desc = '[Y]ank to clipboard' })
@@ -171,9 +173,10 @@ vim.opt.rtp:prepend(lazypath)
 -- NOTE: Here is where you install your plugins.
 require('lazy').setup({
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
-  'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
+  -- 'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
   'tpope/vim-surround', -- All about surroundings
   'tpope/vim-fugitive', -- Git
+  'tpope/vim-unimpaired',
   'github/copilot.vim',
   -- 'raimondi/delimitmate', -- Auto close brackets
   'godlygeek/tabular', -- Align text
@@ -358,29 +361,6 @@ require('lazy').setup({
     end,
   },
 
-  {
-    'nvim-java/nvim-java',
-    dependencies = {
-      'nvim-java/lua-async-await',
-      'nvim-java/nvim-java-refactor',
-      'nvim-java/nvim-java-core',
-      'nvim-java/nvim-java-test',
-      'nvim-java/nvim-java-dap',
-      'MunifTanjim/nui.nvim',
-      'neovim/nvim-lspconfig',
-      'mfussenegger/nvim-dap',
-      {
-        'williamboman/mason.nvim',
-        opts = {
-          registries = {
-            'github:nvim-java/mason-registry',
-            'github:mason-org/mason-registry',
-          },
-        },
-      },
-    },
-  },
-
   { -- LSP Configuration & Plugins
     'neovim/nvim-lspconfig',
     dependencies = {
@@ -550,6 +530,21 @@ require('lazy').setup({
         -- But for many setups, the LSP (`tsserver`) will work just fine
         -- tsserver = {},
         --
+        jdtls = {
+          settings = {
+            java = {
+              configuration = {
+                runtimes = {
+                  {
+                    name = 'JavaSE-21',
+                    path = '/home/pthorin/.sdkman/candidates/java/21.0.2-amzn/',
+                    default = true,
+                  },
+                },
+              },
+            },
+          },
+        },
 
         lua_ls = {
           -- cmd = {...},
@@ -631,6 +626,7 @@ require('lazy').setup({
         -- You can use a sub-list to tell conform to run *until* a formatter
         -- is found.
         -- javascript = { { "prettierd", "prettier" } },
+        java = { 'google-java-format' },
       },
     },
   },
