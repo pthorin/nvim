@@ -179,7 +179,19 @@ require('lazy').setup({
   'tpope/vim-surround', -- All about surroundings
   'tpope/vim-fugitive', -- Git
   'tpope/vim-unimpaired',
-  'github/copilot.vim',
+  {
+    'github/copilot.vim',
+    config = function()
+      vim.g.copilot_enabled = false
+    end,
+  },
+  {
+    'ray-x/lsp_signature.nvim',
+    event = 'InsertEnter',
+    opts = {
+      -- cfg options
+    },
+  },
   -- 'raimondi/delimitmate', -- Auto close brackets
   'godlygeek/tabular', -- Align text
 
@@ -370,7 +382,7 @@ require('lazy').setup({
       { 'williamboman/mason.nvim', config = true }, -- NOTE: Must be loaded before dependants
       'williamboman/mason-lspconfig.nvim',
       'WhoIsSethDaniel/mason-tool-installer.nvim',
-      'nvim-java/nvim-java',
+      { 'nvim-java/nvim-java', opts = {} },
 
       -- Useful status updates for LSP.
       -- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
@@ -459,6 +471,8 @@ require('lazy').setup({
           -- Opens a popup that displays documentation about the word under your cursor
           --  See `:help K` for why this keymap.
           map('K', vim.lsp.buf.hover, 'Hover Documentation')
+          -- Enable signature help with <C-k>
+          vim.keymap.set('i', '<C-k>', '<Cmd>lua vim.lsp.buf.signature_help()<CR>', { noremap = true, silent = true })
 
           -- WARN: This is not Goto Definition, this is Goto Declaration.
           --  For example, in C this would take you to the header.
@@ -541,7 +555,7 @@ require('lazy').setup({
                 runtimes = {
                   {
                     name = 'JavaSE-21',
-                    path = '/home/pthorin/.sdkman/candidates/java/21.0.2-amzn/',
+                    path = '/home/pthorin/.sdkman/candidates/java/current/',
                     default = true,
                   },
                 },
@@ -891,6 +905,5 @@ require('lazy').setup({
     },
   },
 })
-
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
