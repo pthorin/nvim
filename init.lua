@@ -176,6 +176,7 @@ vim.opt.rtp:prepend(lazypath)
 require('lazy').setup({
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
   -- 'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
+  'mfussenegger/nvim-lint',
   'tpope/vim-surround', -- All about surroundings
   'tpope/vim-fugitive', -- Git
   'tpope/vim-unimpaired',
@@ -191,6 +192,13 @@ require('lazy').setup({
     opts = {
       -- cfg options
     },
+  },
+  {
+    'smjonas/inc-rename.nvim',
+    config = function()
+      require('inc_rename').setup()
+      vim.keymap.set('n', '<leader>rn', ':IncRename ')
+    end,
   },
   -- 'raimondi/delimitmate', -- Auto close brackets
   'godlygeek/tabular', -- Align text
@@ -388,9 +396,9 @@ require('lazy').setup({
       -- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
       { 'j-hui/fidget.nvim', opts = {} },
 
-      -- `neodev` configures Lua LSP for your Neovim config, runtime and plugins
+      -- `lazydev` configures Lua LSP for your Neovim config, runtime and plugins
       -- used for completion, annotations and signatures of Neovim apis
-      { 'folke/neodev.nvim', opts = {} },
+      { 'folke/lazydev.nvim', opts = {} },
     },
     config = function()
       -- Brief aside: **What is LSP?**
@@ -551,7 +559,11 @@ require('lazy').setup({
         jdtls = {
           settings = {
             java = {
+              eclipse = {
+                downloadSources = true,
+              },
               configuration = {
+                updateBuildConfiguration = 'interactive',
                 runtimes = {
                   {
                     name = 'JavaSE-21',
@@ -560,7 +572,25 @@ require('lazy').setup({
                   },
                 },
               },
+              maven = {
+                downloadSources = true,
+              },
+              referencesCodeLens = {
+                enabled = true,
+              },
+              references = {
+                includeDecompiledSources = true,
+              },
+              inlayHints = {
+                parameterNames = {
+                  enabled = 'all', -- literals, all, none
+                },
+              },
+              format = {
+                enabled = false,
+              },
             },
+            signatureHelp = { enabled = true },
           },
         },
 
@@ -604,7 +634,8 @@ require('lazy').setup({
             -- by the server configuration above. Useful when disabling
             -- certain features of an LSP (for example, turning off formatting for tsserver)
             server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
-            require('lspconfig')[server_name].setup(server)
+            vim.lsp.config[server_name] = server
+            -- require('lspconfig')[server_name].setup(server)
           end,
         },
       }
