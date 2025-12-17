@@ -679,7 +679,11 @@ require('lazy').setup({
         -- is found.
         javascript = { { 'prettierd', 'prettier' } },
         java = { 'google-java-format' },
-        -- yaml = { 'prettier' },
+        yaml = { 'prettier' },
+        css = { 'prettier' },
+        html = { 'prettier' },
+        markdown = { 'prettier' },
+        graphql = { 'prettier' },
       },
     },
   },

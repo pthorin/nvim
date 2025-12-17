@@ -1,3 +1,7 @@
+require('conform').formatters.prettier = {
+  prepend_args = { '--config-precedence', 'prefer-file', '--single-quote' },
+}
+
 return {
   vim.api.nvim_create_user_command('FormatDisable', function(args)
     if args.bang then
