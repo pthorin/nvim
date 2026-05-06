@@ -28,6 +28,21 @@ vim.api.nvim_create_autocmd('BufReadPost', {
   end,
 })
 
+vim.api.nvim_create_user_command('ForcePrettier', function()
+  vim.cmd '!prettier --ignore-path null -w %'
+end, { bang = false })
+
+-- what? openapi autocmd thing?!
+-- vim.api.nvim_create_autocmd('FileType', {
+--   pattern = 'yaml',
+--   callback = function()
+--     vim.lsp.start {
+--       cmd = { 'openapi-language-server' },
+--       filetypes = { 'yaml' },
+--       root_dir = vim.fn.getcwd(),
+--     }
+--   end,
+-- })
 -- Enable mouse mode, can be useful for resizing splits for example!
 vim.opt.mouse = 'a'
 
@@ -80,8 +95,8 @@ vim.opt.splitbelow = true
 -- Sets how neovim will display certain whitespace characters in the editor.
 --  See `:help 'list'`
 --  and `:help 'listchars'`
--- vim.opt.list = true
--- vim.opt.listchars = { tab = "» ", trail = "·", nbsp = "␣" }
+vim.opt.list = true
+vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
 
 -- Preview substitutions live, as you type!
 vim.opt.inccommand = 'split'
@@ -100,6 +115,7 @@ vim.opt.hlsearch = true
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 
 vim.keymap.set('n', '<leader>sc', '<cmd>/^(<<<<<<<|>>>>>>>|=======)<CR>', { desc = '[S]earch for merge [c]onflict markers' })
+-- vim.keymap.set('n', ']m', '<cmd>/^(<<<<<<<|>>>>>>>|=======)<CR>', { desc = 'Search for [m]erge conflict markers' })
 
 -- copy / paste
 vim.keymap.set('n', '<leader>y', '"+y', { desc = '[Y]ank to clipboard' })
@@ -152,6 +168,24 @@ vim.api.nvim_create_autocmd('TextYankPost', {
     vim.highlight.on_yank()
   end,
 })
+
+-- [[ Terminal flip flop ]]
+vim.keymap.set('n', '<leader>t', function()
+  -- If we're in a terminal, go back
+  if vim.bo.buftype == 'terminal' then
+    vim.cmd 'buffer #'
+  else
+    -- Look for an existing terminal
+    for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+      if vim.api.nvim_buf_is_loaded(buf) and vim.api.nvim_buf_get_option(buf, 'buftype') == 'terminal' then
+        vim.cmd('buffer ' .. buf)
+        return
+      end
+    end
+    -- Otherwise open a new one
+    vim.cmd 'terminal'
+  end
+end, { desc = 'Toggle terminal' })
 
 -- [[ Install `lazy.nvim` plugin manager ]]
 --    See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
