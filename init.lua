@@ -433,6 +433,7 @@ require('lazy').setup({
       -- `lazydev` configures Lua LSP for your Neovim config, runtime and plugins
       -- used for completion, annotations and signatures of Neovim apis
       { 'folke/lazydev.nvim', opts = {} },
+      { 'redhat-developer/yaml-language-server', config = function() end },
     },
     config = function()
       -- Brief aside: **What is LSP?**
@@ -642,6 +643,26 @@ require('lazy').setup({
             },
           },
         },
+
+        yamlls = {
+          settings = {
+            redhat = { telemetry = { enabled = false } },
+            yaml = {
+              format = { enable = true },
+              validate = true,
+              completion = true,
+              hover = true,
+              schemaStore = {
+                enable = true,
+              },
+              schemas = {
+                ['file:///home/pthorin/repos/pitson/cmd/json/schemas/service-info.json'] = 'service-info.y*ml',
+                ['file:///home/pthorin/repos/pitson/cmd/json/schemas/ucp-system.json'] = 'systems/*/ucp-system.y*ml',
+                ['file:///home/pthorin/repos/pitson/cmd/json/schemas/ucp-resources.json'] = 'config/environments/**/*.y*ml',
+              },
+            },
+          },
+        },
       }
 
       -- Ensure the servers and tools above are installed
@@ -654,25 +675,19 @@ require('lazy').setup({
 
       -- You can add other tools here that you want Mason to install
       -- for you, so that they are available from within Neovim.
+      --
+      --
       local ensure_installed = vim.tbl_keys(servers or {})
       vim.list_extend(ensure_installed, {
         'stylua', -- Used to format Lua code
       })
+
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
-      require('mason-lspconfig').setup {
-        handlers = {
-          function(server_name)
-            local server = servers[server_name] or {}
-            -- This handles overriding only values explicitly passed
-            -- by the server configuration above. Useful when disabling
-            -- certain features of an LSP (for example, turning off formatting for tsserver)
-            server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
-            vim.lsp.config[server_name] = server
-            -- require('lspconfig')[server_name].setup(server)
-          end,
-        },
-      }
+      for name, server in pairs(servers) do
+        vim.lsp.config(name, server)
+        vim.lsp.enable(name)
+      end
     end,
   },
 
