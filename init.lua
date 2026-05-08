@@ -32,17 +32,6 @@ vim.api.nvim_create_user_command('ForcePrettier', function()
   vim.cmd '!prettier --ignore-path null -w %'
 end, { bang = false })
 
--- what? openapi autocmd thing?!
--- vim.api.nvim_create_autocmd('FileType', {
---   pattern = 'yaml',
---   callback = function()
---     vim.lsp.start {
---       cmd = { 'openapi-language-server' },
---       filetypes = { 'yaml' },
---       root_dir = vim.fn.getcwd(),
---     }
---   end,
--- })
 -- Enable mouse mode, can be useful for resizing splits for example!
 vim.opt.mouse = 'a'
 
@@ -210,6 +199,23 @@ vim.opt.rtp:prepend(lazypath)
 require('lazy').setup({
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
   -- 'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
+  {
+    'kristijanhusak/vim-dadbod-ui',
+    dependencies = {
+      { 'tpope/vim-dadbod', lazy = true },
+      { 'kristijanhusak/vim-dadbod-completion', ft = { 'sql', 'mysql', 'plsql' }, lazy = true },
+    },
+    cmd = {
+      'DBUI',
+      'DBUIToggle',
+      'DBUIAddConnection',
+      'DBUIFindBuffer',
+    },
+    init = function()
+      -- Your DBUI configuration
+      vim.g.db_ui_use_nerd_fonts = 1
+    end,
+  },
   'mfussenegger/nvim-lint',
   'tpope/vim-surround', -- All about surroundings
   'tpope/vim-fugitive', -- Git
@@ -416,6 +422,11 @@ require('lazy').setup({
       end, { desc = '[S]earch [N]eovim files' })
     end,
   },
+  {
+    'pmizio/typescript-tools.nvim',
+    dependencies = { 'nvim-lua/plenary.nvim', 'neovim/nvim-lspconfig' },
+    opts = {},
+  },
 
   { -- LSP Configuration & Plugins
     'neovim/nvim-lspconfig',
@@ -433,7 +444,6 @@ require('lazy').setup({
       -- `lazydev` configures Lua LSP for your Neovim config, runtime and plugins
       -- used for completion, annotations and signatures of Neovim apis
       { 'folke/lazydev.nvim', opts = {} },
-      { 'redhat-developer/yaml-language-server', config = function() end },
     },
     config = function()
       -- Brief aside: **What is LSP?**
@@ -644,6 +654,20 @@ require('lazy').setup({
           },
         },
 
+        lemminx = {
+          settings = {
+            xml = {
+              -- These help if you use XSD/DTD later:
+              format = { enabled = true },
+              validation = { enabled = true },
+
+              -- Optional quality-of-life:
+              completion = { enabled = true },
+              hover = { enabled = true },
+            },
+          },
+        },
+
         yamlls = {
           settings = {
             redhat = { telemetry = { enabled = false } },
@@ -675,11 +699,13 @@ require('lazy').setup({
 
       -- You can add other tools here that you want Mason to install
       -- for you, so that they are available from within Neovim.
-      --
-      --
       local ensure_installed = vim.tbl_keys(servers or {})
       vim.list_extend(ensure_installed, {
         'stylua', -- Used to format Lua code
+        'lua_ls',
+        'lemminx',
+        'yamlls',
+        'jdtls',
       })
 
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
@@ -842,6 +868,7 @@ require('lazy').setup({
         },
         sources = {
           { name = 'nvim_lsp' },
+          { name = 'vim-dadbod-completion' },
           { name = 'luasnip' },
           { name = 'path' },
         },
